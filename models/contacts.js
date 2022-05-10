@@ -60,7 +60,7 @@ const updateContact = async ({ contactId }, body) => {
 
     const data = JSON.parse(await fs.readFile(contactsPath, 'utf-8'));
     const editedContacts = data.map(el => {
-      if (parseInt(el.id) === parseInt(contactId)) {
+      if (el.id.toString() === contactId.toString()) {
         flag = true;
         updatedContact = { ...el, ...body };
         return updatedContact;
