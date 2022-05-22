@@ -3,6 +3,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const mongoose = require('mongoose');
 const { getConfig } = require('./config');
 const { usersController } = require('./resources/user.controller');
 
@@ -14,9 +15,10 @@ class UsersServer {
     this.config = null;
   }
 
-  start() {
+  async start() {
     this.initServer();
     this.initConfig();
+    await this.initDatabase();
     this.initMiddlewares();
     this.initRoutes();
     this.initError();
@@ -30,6 +32,16 @@ class UsersServer {
   initConfig() {
     dotenv.config({ path: path.join(__dirname, '../.env') });
     this.config = getConfig();
+  }
+
+  async initDatabase() {
+    try {
+      await mongoose.connect(this.config.database.url);
+      console.log("Database connection successful");
+    } catch (err) {
+      console.log('Database connection error', err);
+      process.exit(1);
+    }
   }
 
   initMiddlewares() {
@@ -47,7 +59,7 @@ class UsersServer {
     this.app.use((err, req, res, next) => {
       const statusCode = err.status || 500;
       if (statusCode >= 500) {
-        console.log(err);
+        res.status(statusCode).json({ message: err.message })
       }
       res.status(statusCode).json({ message: err.message })
     })

@@ -1,4 +1,6 @@
 const Joi = require("joi");
+const { objectId } = require('../shared/object-id');
+
 
 const postSchema = Joi.object({
     name: Joi.string().required().min(2),
@@ -12,30 +14,18 @@ const putSchema = Joi.object().keys({
     phone: Joi.number()
 }).or('name', 'email', 'phone');
 
+const idSchema = Joi.object({
+    contactId: Joi.string().custom(objectId),
+})
+
+const patchSchema = Joi.object({
+    favorite: Joi.boolean().required()
+})
+
 module.exports = {
     postSchema,
-    putSchema
+    putSchema,
+    idSchema,
+    patchSchema
 }
 
-// function validateContacts(req, res, next) {
-//     const schema = Joi.object({
-//         name: Joi.string().required().min(2),
-//         email: Joi.string().email().required(),
-//         phone: Joi.number().required()
-//     })
-//     const result = schema.validate(req.body);
-//     if (result.error) {
-//         return res.status(400).json({ message: "missing required name field" });
-//     }
-//     next();
-// }
-
-// function validatePutContacts({ body }, res, next) {
-//     if (body.name || body.email || body.phone) {
-//         next();
-//         return;
-//     }
-//     return res.status(400).json({ "message": "missing fields" });
-// }
-
-// module.exports = { validateContacts, validatePutContacts };
