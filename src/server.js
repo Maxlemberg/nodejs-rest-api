@@ -5,7 +5,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 const mongoose = require('mongoose');
 const { getConfig } = require('./config');
-const { usersController } = require('./resources/user.controller');
+const { contactsController } = require('./resources/contacts/contacts.controller');
+const { UsersController } = require('./resources/users/users.controller');
 
 
 class UsersServer {
@@ -52,7 +53,8 @@ class UsersServer {
   }
 
   initRoutes() {
-    this.app.use('/api/contacts', usersController)
+    this.app.use('/api/contacts', contactsController);
+    this.app.use('/api/users', UsersController);
   }
 
   initError() {

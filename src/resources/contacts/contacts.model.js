@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const userSchema = new Schema({
+const contactSchema = new Schema({
     name: {
         type: String,
         required: [true, 'Set name for contact'],
@@ -18,8 +18,8 @@ const userSchema = new Schema({
     },
 })
 
-userSchema.statics.updateUser = (id, updateParams) => {
-    return this.UserModel.findOneAndUpdate(id, updateParams, { new: true });
+contactSchema.statics.updateUser = (id, updateParams) => {
+    return this.ContactsModel.findOneAndUpdate(id, updateParams, { new: true });
 }
 
-exports.UserModel = model('contacts', userSchema);
+exports.ContactsModel = model('contacts', contactSchema);

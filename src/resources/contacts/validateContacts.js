@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { objectId } = require('../shared/object-id');
+const { objectId } = require('../../shared/object-id');
 
 
 const postSchema = Joi.object({
