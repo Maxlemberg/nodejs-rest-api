@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const { getConfig } = require('./config');
 const { contactsController } = require('./resources/contacts/contacts.controller');
 const { UsersController } = require('./resources/users/users.controller');
+const { FilesController } = require('./resources/files/files.controller');
 
 
 class UsersServer {
@@ -55,6 +56,7 @@ class UsersServer {
   initRoutes() {
     this.app.use('/api/contacts', contactsController);
     this.app.use('/api/users', UsersController);
+    this.app.use('/avatars', FilesController);
   }
 
   initError() {

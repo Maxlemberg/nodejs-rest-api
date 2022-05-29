@@ -3,6 +3,7 @@ const { Conflict, Unauthorized, Forbidden, NotFound } = require('http-errors');
 const bcrypt = require('bcryptjs');
 const { getConfig } = require('../../config');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
 
 class AuthService {
     async signUp(userParams) {
@@ -11,9 +12,11 @@ class AuthService {
         if (existingUser) {
             throw new Conflict('User with such email already exist');
         }
+        const avatarURL = gravatar.url(email, { protocol: 'https', s: '200' });
         return UserModel.create({
             email,
-            hashPassword: await this.hashPassword(password)
+            hashPassword: await this.hashPassword(password),
+            avatarURL
         })
     }
 
