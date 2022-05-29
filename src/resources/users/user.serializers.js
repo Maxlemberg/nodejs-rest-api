@@ -17,3 +17,10 @@ exports.serializeSignIn = (signInResponse) => {
         }
     }
 }
+
+exports.serializeAvatar = (userResponse) => {
+    const { avatarURL } = userResponse;
+    return {
+        avatarURL
+    }
+}

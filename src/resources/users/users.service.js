@@ -55,6 +55,11 @@ class AuthService {
         return user;
     }
 
+    async updateAvatarUrl(id, avatarURL) {
+        console.log(id, avatarURL);
+        return UserModel.findByIdAndUpdate({ _id: id }, { avatarURL }, { new: true });
+    }
+
     async hashPassword(password) {
         const config = getConfig();
         return bcrypt.hash(password, config.bcrypt.salt);
