@@ -3,6 +3,7 @@ const { Conflict, Unauthorized, Forbidden, NotFound } = require('http-errors');
 const bcrypt = require('bcryptjs');
 const { getConfig } = require('../../config');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
 
 class AuthService {
     async signUp(userParams) {
@@ -11,9 +12,11 @@ class AuthService {
         if (existingUser) {
             throw new Conflict('User with such email already exist');
         }
+        const avatarURL = gravatar.url(email, { protocol: 'https', s: '200' });
         return UserModel.create({
             email,
-            hashPassword: await this.hashPassword(password)
+            hashPassword: await this.hashPassword(password),
+            avatarURL
         })
     }
 
@@ -50,6 +53,11 @@ class AuthService {
             throw new Unauthorized('User is not logged')
         }
         return user;
+    }
+
+    async updateAvatarUrl(id, avatarURL) {
+        console.log(id, avatarURL);
+        return UserModel.findByIdAndUpdate({ _id: id }, { avatarURL }, { new: true });
     }
 
     async hashPassword(password) {
