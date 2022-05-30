@@ -1,15 +1,19 @@
 const { NotFound, Conflict } = require("http-errors");
-const { UserModel } = require('./user.model');
+const { ContactsModel } = require('./contacts.model');
 
 
-class UserService {
+class ContactService {
 
   async getContactsList() {
-    return UserModel.find();
+    return ContactsModel.find();
+  }
+
+  async paginateContacts(offset, limit) {
+    return await ContactsModel.find().limit(limit).skip(offset);
   }
 
   async getContactById(id) {
-    const user = await UserModel.findById(id);
+    const user = await ContactsModel.findById(id);
     if (!user) {
       throw new NotFound(`User with id '${id
         }' not found`)
@@ -18,7 +22,7 @@ class UserService {
   }
 
   async removeContact({ contactId }) {
-    const user = await UserModel.findOneAndRemove({ _id: contactId });
+    const user = await ContactsModel.findOneAndRemove({ _id: contactId });
     if (!user) {
       throw new NotFound(`User with id '${contactId
         }' not found`)
@@ -26,15 +30,15 @@ class UserService {
   }
 
   async addContact(body) {
-    const existingUser = await UserModel.findOne({ email: body.email });
+    const existingUser = await ContactsModel.findOne({ email: body.email });
     if (existingUser) {
       throw new Conflict('User with such email already exists');
     }
-    return await UserModel.create(body);
+    return await ContactsModel.create(body);
   }
 
   async updateStatusContact({ contactId }, body) {
-    const updatedUser = await UserModel.updateUser({
+    const updatedUser = await ContactsModel.updateUser({
       _id: contactId
     }, body);
     if (!updatedUser) {
@@ -45,5 +49,5 @@ class UserService {
   }
 }
 
-exports.UserService = new UserService;
+exports.ContactService = new ContactService;
 
