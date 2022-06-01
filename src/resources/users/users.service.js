@@ -4,8 +4,20 @@ const bcrypt = require('bcryptjs');
 const { getConfig } = require('../../config');
 const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
+const { v4: uuidv4 } = require('uuid');
+const { sendMail } = require('../../shared/sendMailer');
 
 class AuthService {
+
+    async sendVerifyEmailRepeatedly(email) {
+        const user = await UserModel.findOne({ email });
+        if (!user.verify) {
+            const verificationToken = uuidv4();
+            const res = await sendMail(verificationToken);
+            return res;
+        }
+    };
+
     async signUp(userParams) {
         const { email, password } = userParams;
         const existingUser = await UserModel.findOne({ email });
@@ -13,17 +25,20 @@ class AuthService {
             throw new Conflict('User with such email already exist');
         }
         const avatarURL = gravatar.url(email, { protocol: 'https', s: '200' });
+        const verificationToken = uuidv4();
+        await sendMail(verificationToken);
         return UserModel.create({
             email,
             hashPassword: await this.hashPassword(password),
-            avatarURL
-        })
+            avatarURL,
+            verificationToken
+        });
     }
 
     async login(credential) {
         const { email, password } = credential;
         const user = await UserModel.findOne({ email });
-        if (!user) {
+        if (!user || !user.verify) {
             throw new Unauthorized('Email or password is wrong');
         }
 
@@ -44,8 +59,8 @@ class AuthService {
         }
     }
 
-    async getCurrentUser(id) {
-        const user = await UserModel.findById(id);
+    async getCurrentUser(data) {
+        const user = await UserModel.findOne({ data })
         if (!user) {
             throw new NotFound('User not found');
         }
@@ -56,7 +71,6 @@ class AuthService {
     }
 
     async updateAvatarUrl(id, avatarURL) {
-        console.log(id, avatarURL);
         return UserModel.findByIdAndUpdate({ _id: id }, { avatarURL }, { new: true });
     }
 
@@ -76,6 +90,10 @@ class AuthService {
 
     async updateToken(id, token) {
         return UserModel.findByIdAndUpdate({ _id: id }, { token }, { new: true });
+    }
+
+    async updateData(data, objParams) {
+        return UserModel.findOneAndUpdate({ data }, { "$set": { ...objParams } }, { new: true });
     }
 
 }
