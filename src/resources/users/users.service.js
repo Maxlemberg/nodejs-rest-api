@@ -38,6 +38,7 @@ class AuthService {
     async login(credential) {
         const { email, password } = credential;
         const user = await UserModel.findOne({ email });
+        console.log(user);
         if (!user || !user.verify) {
             throw new Unauthorized('Email or password is wrong');
         }
@@ -92,8 +93,8 @@ class AuthService {
         return UserModel.findByIdAndUpdate({ _id: id }, { token }, { new: true });
     }
 
-    async updateData(data, objParams) {
-        return UserModel.findOneAndUpdate({ data }, { "$set": { ...objParams } }, { new: true });
+    async updateData(verificationToken, objParams) {
+        return UserModel.findOneAndUpdate({ verificationToken }, { ...objParams }, { new: true });
     }
 
 }

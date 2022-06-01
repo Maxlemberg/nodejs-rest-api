@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/verify/:verificationToken', catchErrors(async (req, res, next) => {
     const { verificationToken } = req.params;
     await AuthService.getCurrentUser(verificationToken);
-    await AuthService.updateData({ verificationToken: null, verify: true });
+    await AuthService.updateData(verificationToken, { verificationToken: 'null', verify: true });
     res.status(200).send({ message: 'Verification successful' })
 }))
 
