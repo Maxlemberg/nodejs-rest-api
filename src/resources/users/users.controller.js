@@ -10,6 +10,25 @@ const { compressImg } = require('../../shared/compressImg');
 
 const router = express.Router();
 
+router.get('/verify/:verificationToken', catchErrors(async (req, res, next) => {
+    const { verificationToken } = req.params;
+    await AuthService.getCurrentUser(verificationToken);
+    await AuthService.updateData({ verificationToken: null, verify: true });
+    res.status(200).send({ message: 'Verification successful' })
+}))
+
+router.post('/verify', catchErrors(async (req, res, next) => {
+    const { email } = req.body;
+    if (!email) {
+        res.status(400).json({ "message": "missing required field email" })
+    }
+    const response = await AuthService.sendVerifyEmailRepeatedly(email);
+    if (!response) {
+        res.send(400).json({ message: "Verification has already been passed" })
+    }
+    res.status(200).send();
+}))
+
 router.post('/signup', validate(signUpSchema), catchErrors(async (req, res, next) => {
     const user = await AuthService.signUp(req.body);
     res.status(201).json(serializeSignUp(user));

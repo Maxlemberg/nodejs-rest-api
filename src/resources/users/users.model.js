@@ -25,7 +25,15 @@ const userSchema = new Schema({
     owner: {
         type: SchemaTypes.ObjectId,
         ref: 'user',
-    }
+    },
+    verify: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: {
+        type: String,
+        required: [true, 'Verify token is required'],
+    },
 });
 
 exports.UserModel = model('user', userSchema);
